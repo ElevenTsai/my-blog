@@ -299,7 +299,7 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
   display: block;
   position: relative;
   z-index: 2;
-  animation: avatarFloat 6.5s ease-in-out infinite;
+  animation: none;
   background: var(--surface-inset);
 }
 @keyframes avatarFloat {
@@ -315,7 +315,7 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
   opacity: 0.35;
   filter: blur(18px);
   z-index: 1;
-  animation: avatarSpin 12s linear infinite;
+  animation: none;
 }
 @keyframes avatarSpin {
   from { transform: rotate(0deg); }
@@ -332,7 +332,7 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
   border: 3px solid var(--bg-0);
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.55);
   z-index: 3;
-  animation: pulse 2.4s ease-in-out infinite;
+  animation: none;
 }
 .nav-links {
   display: flex;
@@ -456,7 +456,7 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
           background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
-  animation: gradientMove 12s ease-in-out infinite;
+  animation: none;
 }
 @keyframes gradientMove {
   0%, 100% { background-position: 0% 50%; }
@@ -822,8 +822,9 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
 
 /* ---------- Reveal animation ---------- */
 .reveal { opacity: 1; }
-html[data-motion-ready] .reveal:not(.in):not(.reveal-container) { opacity: 0; translate: 0 14px; }
-.reveal.in:not(.reveal-container) { animation: contentEnter 0.48s var(--motion-ease) backwards; }
+/* Content stays readable before observers and during navigation. */
+.reveal.in:not(.reveal-container) { animation: contentSettle 0.36s var(--motion-ease) backwards; }
+@keyframes contentSettle { from { translate: 0 8px; } to { translate: 0 0; } }
 @keyframes contentEnter { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
 .reveal.d1 { animation-delay: 0.04s; }
 .reveal.d2 { animation-delay: 0.08s; }
@@ -910,7 +911,7 @@ html[data-motion-ready] .reveal:not(.in):not(.reveal-container) { opacity: 0; tr
   background: #fff;
   opacity: 1;
   box-shadow: 0 0 8px rgba(255,255,255,0.65);
-  animation: pulse 2.4s ease-in-out infinite;
+  animation: none;
 }
 .subtabs-hint {
   font-size: 12px;

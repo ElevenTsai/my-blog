@@ -129,7 +129,7 @@
 /* The shared animated backdrop remains visible around the quiet reading surface. */
 .document-page .article-content { background: var(--fs-page); box-shadow: 0 0 0 20px var(--fs-page); }
 .document-page .article-toc { background: color-mix(in srgb, var(--fs-page) 94%, transparent); }
-.document-page .article-title, .document-page .document-toolbar { animation: contentEnter 0.4s var(--motion-ease) backwards; }
+/* Article text is ready immediately; shared titles carry navigation continuity. */
 
 .document-page .article-content .code-block { background: var(--fs-soft); }
 .document-page :is(.code-header,.code-caption) { background: transparent; border-color: var(--fs-line); }

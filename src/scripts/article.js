@@ -52,24 +52,28 @@ function initArticle() {
     button.innerHTML = '<span aria-live="polite">复制代码</span>';
     wrapper.append(button);
   });
-  const timers = new Set();
+  const timers = new Map();
   on(document, 'click', async event => {
     const button = event.target.closest('.code-copy');
     if (!button) return;
     const code = button.closest('.code-block')?.querySelector('code');
     if (!code) return;
-    const label = button.querySelector('span'), original = label?.textContent;
+    const label = button.querySelector('span'), original = button.dataset.copyLabel || label?.textContent;
+    if (label) button.dataset.copyLabel = original;
+    clearTimeout(timers.get(button));
     try {
       await navigator.clipboard.writeText(code.textContent);
       if (label) label.textContent = '已复制';
+      button.dataset.copyState = 'success';
     } catch {
       const range = document.createRange(); range.selectNodeContents(code);
       const selection = getSelection(); selection.removeAllRanges(); selection.addRange(range);
       if (label) label.textContent = '已选中，请复制';
+      delete button.dataset.copyState;
     }
     if (controller.signal.aborted) return;
-    const timer = setTimeout(() => { if (label) label.textContent = original; timers.delete(timer); }, 1600);
-    timers.add(timer);
+    const timer = setTimeout(() => { if (label) label.textContent = original; delete button.dataset.copyState; timers.delete(button); }, 1600);
+    timers.set(button, timer);
   });
   on(back, 'click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
   const toggle = document.querySelector('.toc-toggle');
@@ -98,7 +102,7 @@ function initArticle() {
     on(mobile, 'change', () => setOpen(false));
   }
   measure();
-  dispose = () => { controller.abort(); observer.disconnect(); cancelAnimationFrame(frame); timers.forEach(clearTimeout); };
+  dispose = () => { controller.abort(); observer.disconnect(); cancelAnimationFrame(frame); timers.forEach(timer => clearTimeout(timer)); };
 }
 document.addEventListener('astro:before-swap', () => dispose());
 document.addEventListener('astro:page-load', initArticle);

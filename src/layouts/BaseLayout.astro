@@ -2,6 +2,7 @@
 // Base HTML shell used by every page.
 import '../styles/global.css';
 import '../styles/document.css';
+import '../styles/experience.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Aurora from '../components/Aurora.astro';
@@ -37,6 +38,8 @@ const {
       const root = document.documentElement;
       let choice = 'light';
       try { choice = localStorage.getItem('highlight-info-theme') || choice; } catch {}
+      if (!['light', 'dark', 'auto'].includes(choice)) choice = 'light';
+      root.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'still' : 'full';
       root.dataset.theme = choice === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : choice;
       root.dataset.themeChoice = choice;
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) root.dataset.motionReady = '';

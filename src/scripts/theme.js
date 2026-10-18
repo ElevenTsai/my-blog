@@ -3,7 +3,15 @@ import { navigationPath } from '../lib/site';
 const key = 'highlight-info-theme';
 const media = matchMedia('(prefers-color-scheme: dark)');
 const motion = matchMedia('(prefers-reduced-motion: reduce)');
-function readChoice() { try { return localStorage.getItem(key) || 'light'; } catch { return 'light'; } }
+function readChoice() { try { const value = localStorage.getItem(key); return ['light', 'dark', 'auto'].includes(value) ? value : 'light'; } catch { return 'light'; } }
+function applyMotion(root = document.documentElement) {
+  const still = motion.matches;
+  root.dataset.motion = still ? 'still' : 'full';
+  if (root !== document.documentElement) return;
+  window.dispatchEvent(new CustomEvent('motionchange', { detail: { still } }));
+}
+applyMotion();
+document.addEventListener('visibilitychange', () => document.documentElement.toggleAttribute('data-ambient-paused', document.hidden));
 function apply(choice, root = document.documentElement) {
   const theme = choice === 'auto' ? (media.matches ? 'dark' : 'light') : choice;
   root.dataset.theme = theme;
@@ -29,9 +37,13 @@ document.addEventListener('click', event => {
   }
 });
 media.addEventListener('change', () => { if (readChoice() === 'auto') apply('auto'); });
-document.addEventListener('astro:before-swap', event => apply(readChoice(), event.newDocument.documentElement));
+document.addEventListener('astro:before-swap', event => {
+  apply(readChoice(), event.newDocument.documentElement);
+  applyMotion(event.newDocument.documentElement);
+});
 document.addEventListener('astro:after-swap', () => {
   apply(readChoice());
+  applyMotion();
   const active = navigationPath(location.pathname);
   document.querySelectorAll('.nav-links a:not([target])').forEach(link => {
     const current = link.getAttribute('href') === active;
@@ -40,11 +52,11 @@ document.addEventListener('astro:after-swap', () => {
   });
 });
 let observer;
-function revealPage() {
+function revealPage(navigation = false) {
   observer?.disconnect();
   const nodes = document.querySelectorAll('.reveal');
-  if (motion.matches || !('IntersectionObserver' in window)) {
-    nodes.forEach(el => el.classList.add('in'));
+  if (navigation === true || motion.matches || !('IntersectionObserver' in window)) {
+    nodes.forEach(el => el.classList.add('in', 'motion-settled'));
   } else {
     document.documentElement.dataset.motionReady = '';
     observer = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -58,8 +70,8 @@ function revealPage() {
   }
   window.__motionInitialized = true;
 }
-motion.addEventListener('change', revealPage);
-document.addEventListener('astro:page-load', revealPage);
+motion.addEventListener('change', () => { applyMotion(); revealPage(); });
+document.addEventListener('astro:after-swap', () => revealPage(true));
 document.addEventListener('astro:before-swap', () => observer?.disconnect());
 
 revealPage();

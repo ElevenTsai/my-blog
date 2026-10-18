@@ -9,18 +9,27 @@ import home from '../data/home.json';
   title="蔡世逸的个人站"
   description={home.tagline}
   current="home"
+  bodyClass="home-page"
   showStarfield={true}
 >
   <main class="page">
-    <header class="hero reveal">
-      <div class="hero-avatar-wrap">
-        <img class="hero-avatar" src={sitePath("/avatar.jpg")} alt="蔡世逸的 AI 头像" width="128" height="128" />
+    <header class="hero home-hero">
+      <div class="identity-scene" aria-hidden="true">
+        <svg class="identity-orbits" viewBox="0 0 360 180" fill="none">
+          <ellipse class="orbit orbit-a" cx="180" cy="90" rx="152" ry="50" transform="rotate(-16 180 90)" pathLength="1" />
+          <ellipse class="orbit orbit-b" cx="180" cy="90" rx="125" ry="66" transform="rotate(20 180 90)" pathLength="1" />
+          <path class="orbit orbit-c" d="M62 91C102 17 263 16 304 88" pathLength="1" />
+          <circle class="orbit-point" cx="321" cy="54" r="3" />
+          <circle class="orbit-point second" cx="75" cy="114" r="2.5" />
+        </svg>
       </div>
-      <span class="badge">PERSONAL · SITE</span>
+      <div class="hero-avatar-wrap">
+        <img class="hero-avatar" src={sitePath("/avatar.jpg")} alt="蔡世逸的 AI 头像" width="128" height="128" fetchpriority="high" decoding="async" />
+      </div>
       <h1>蔡世逸的个人站</h1>
       <p class="tagline">
-        {home.tagline}<br />
-        {home.introduction}
+        {home.tagline}
+        <span class="hero-introduction">{home.introduction}</span>
       </p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href={sitePath(showWork ? "/work/" : "/posts/")}>
@@ -41,11 +50,11 @@ import home from '../data/home.json';
           个人说明书
         </a>}
       </div>
+      <a class="explore-cue" href="#explore">继续探索 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6" /></svg></a>
     </header>
 
-    <section class="section reveal d1">
+    <section class="section home-explore" id="explore">
       <div class="section-head">
-        <span class="section-eyebrow">Explore</span>
         <h2 class="section-title">从这里开始</h2>
         <p class="section-sub">{home.explore}</p>
       </div>
@@ -61,14 +70,13 @@ import home from '../data/home.json';
       </div>
     </section>
 
-    <section class="section reveal d2">
+    <section class="section home-changelog">
       <div class="section-head">
-        <span class="section-eyebrow">Changelog</span>
         <h2 class="section-title">最近更新</h2>
         <p class="section-sub">站点迭代与内容更新。</p>
       </div>
 
-      <div class="empty-state">
+      <div class="changelog-note">
         <div class="empty-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
@@ -83,3 +91,17 @@ import home from '../data/home.json';
     </section>
   </main>
 </BaseLayout>
+
+<script>
+  const initialized = new WeakSet();
+  let seen = false;
+  const enter = () => {
+    const scene = document.querySelector('.home-hero');
+    if (!scene || initialized.has(scene)) return;
+    initialized.add(scene);
+    if (!seen && document.documentElement.dataset.motion !== 'still') scene.classList.add('scene-enter');
+    seen = true;
+  };
+  document.addEventListener('astro:page-load', enter);
+  enter();
+</script>
