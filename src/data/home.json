@@ -8,12 +8,12 @@
     {
       "href": "/posts/",
       "title": "文章",
-      "description": "技术笔记、效率工具与实践经验。当前收录《日常工作效率宝典》，涵盖 Windows/Linux 操作技巧、终端工具、剪贴板增强和跨设备同步。",
+      "description": "技术笔记、实践经验与日常思考，内容正在整理。",
       "variant": "amber",
       "icon": "book",
       "meta": [
-        "效率工具",
-        "技术笔记"
+        "技术笔记",
+        "实践思考"
       ],
       "external": false
     },
