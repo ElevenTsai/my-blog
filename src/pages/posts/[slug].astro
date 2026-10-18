@@ -17,6 +17,7 @@ interface Post {
   toc: TocEntry[];
   description?: string;
   syncedAt?: string;
+  updatedAt?: string;
   sourceRevision?: number;
 }
 
@@ -48,6 +49,7 @@ const { slug } = Astro.params;
   description={post.description}
   sourceDocUrl={post.docUrl}
   syncedAt={post.syncedAt}
+  updatedAt={post.updatedAt}
   sourceRevision={post.sourceRevision}
   breadcrumb={[
     { label: '首页', href: '/' },

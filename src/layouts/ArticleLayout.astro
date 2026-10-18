@@ -5,6 +5,7 @@ import BackToTop from '../components/BackToTop.astro';
 import TocToggle from '../components/TocToggle.astro';
 import { highlightDocument } from '../lib/highlight-document';
 import { sitePath, siteHtml } from '../lib/site';
+import { estimateReadingMinutes, formatReadingTime, formatArticleDate } from '../lib/article-meta';
 
 interface TocEntry {
   level: number;
@@ -22,12 +23,15 @@ interface Props {
   highlightCode?: boolean;
   syncedAt?: string;
   sourceRevision?: number;
+  readingMinutes?: number;
+  publishedAt?: string;
+  updatedAt?: string;
   breadcrumb: { label: string; href?: string }[];
   toc: TocEntry[];
   contentHtml?: string;
 }
-const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision } = Astro.props;
-const syncLabel = syncedAt ? new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(syncedAt)) : '';
+const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision, readingMinutes, publishedAt, updatedAt } = Astro.props;
+const readingLabel = formatReadingTime(readingMinutes ?? estimateReadingMinutes(contentHtml ?? ''));
 
 const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocument(contentHtml) : contentHtml) : contentHtml;
 ---
@@ -60,7 +64,7 @@ const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocum
             {crumb.label}
           </a>
         ) : (
-          <span class="current">{crumb.label}</span>
+          <span class="current" title={crumb.label}>{crumb.label}</span>
         )}
       </>
     ))}
@@ -68,8 +72,10 @@ const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocum
 
   <div class="document-toolbar">
     <div class="document-meta">
-      <slot name="metadata" />
-      {syncLabel && <span title={`网页为同步副本，飞书版本 ${sourceRevision ?? ''}`}>同步于 <time datetime={syncedAt}>{syncLabel}</time></span>}
+      <span class="document-reading-time">{readingLabel}</span>
+      {publishedAt && !updatedAt && <span>发布于 <time datetime={publishedAt}>{formatArticleDate(publishedAt)}</time></span>}
+      {updatedAt && <span>最后更新 <time datetime={updatedAt}>{formatArticleDate(updatedAt)}</time></span>}
+      {syncedAt && <span title={`网页为同步副本，飞书版本 ${sourceRevision ?? ''}`}>同步于 <time datetime={syncedAt}>{formatArticleDate(syncedAt, true)}</time></span>}
     </div>
     {sourceDocUrl
       ? <a class="document-action" href={sourceDocUrl} target="_blank" rel="noopener">在飞书中打开 ↗</a>

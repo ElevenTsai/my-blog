@@ -6,13 +6,14 @@ import CollectionHero from '../../components/CollectionHero.astro';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { showWork, sitePath } from '../../lib/site';
+import { estimateReadingMinutes } from '../../lib/article-meta';
 
 interface PostMeta {
   slug: string;
   title: string;
   excerpt: string;
   tags: { label: string; accent?: boolean }[];
-  readingTime?: string;
+  readingMinutes: number;
   order?: number;
 }
 
@@ -31,7 +32,7 @@ try {
         title: data.title,
         excerpt: data.excerpt || '',
         tags: data.tags || [],
-        readingTime: data.readingTime,
+        readingMinutes: estimateReadingMinutes(data.contentHtml || ''),
         order: data.order ?? 999,
       } as PostMeta;
     })
@@ -59,7 +60,7 @@ try {
               title={post.title}
               excerpt={post.excerpt}
               tags={post.tags}
-              readingTime={post.readingTime}
+              readingMinutes={post.readingMinutes}
               revealDelay={((i % 4) + 1) as 1 | 2 | 3 | 4}
             />
           ))}        </div>

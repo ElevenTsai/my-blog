@@ -115,10 +115,12 @@
   .document-page .article-content .callout { padding: 12px; gap: 8px; }
 }
 
-.document-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.document-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; line-height: 1.5; }
+.document-meta > span { display: inline-flex; align-items: center; gap: 4px; }
+.document-meta time { white-space: nowrap; }
 .document-page .article-content .document-description { color: var(--fs-muted); margin: -16px 0 24px; }
-.document-page .article-content .work-tags { padding: 0; margin: 0 0 28px; list-style: none; color: var(--fs-muted); }
-.document-page .article-content .work-tags li { margin: 0; padding: 0; }
+.document-page .article-content .document-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 28px; list-style: none; }
+.document-page .article-content .document-tags .post-tag { margin: 0; padding: 3px 10px; line-height: 1.5; }
 .document-page .article-content .markdown-body hr { border: 0; border-top: 1px solid var(--fs-line); margin: 24px 0; }
 .document-page .article-content .markdown-body pre.astro-code { border: 0; border-radius: 4px; margin: 0; }
 .document-page .article-content .markdown-body img { max-width: 100%; height: auto; }

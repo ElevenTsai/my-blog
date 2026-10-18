@@ -1,15 +1,15 @@
 ---
 import { sitePath } from '../lib/site';
+import { formatReadingTime } from '../lib/article-meta';
 interface Props {
   href: string;
   title: string;
   excerpt: string;
   tags: { label: string }[];
-  date?: string;
-  readingTime?: string;
+  readingMinutes: number;
   revealDelay?: 1 | 2 | 3 | 4;
 }
-const { href, title, excerpt, tags, date, readingTime, revealDelay = 1 } = Astro.props;
+const { href, title, excerpt, tags, readingMinutes, revealDelay = 1 } = Astro.props;
 ---
 <a data-astro-prefetch="hover" href={sitePath(href)} class={`post-card reveal d${revealDelay}`}>
   <div class="post-tags">
@@ -18,10 +18,7 @@ const { href, title, excerpt, tags, date, readingTime, revealDelay = 1 } = Astro
   <h2 class="post-title">{title}</h2>
   <p class="post-excerpt">{excerpt}</p>
   <div class="post-footer">
-    <span class="post-info">
-      {date && <time datetime={date}>{date.replaceAll('-', '.')}</time>}
-      {readingTime && <span>{readingTime}</span>}
-    </span>
+    <span class="post-info">{formatReadingTime(readingMinutes)}</span>
     <span class="post-cta" aria-hidden="true">阅读全文 <span>→</span></span>
   </div>
 </a>

@@ -711,7 +711,7 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
   font-size: 12px;
   color: var(--muted);
 }
-.post-info { display: inline-flex; flex-wrap: wrap; gap: 6px 12px; }
+.post-info { display: inline-flex; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .post-cta { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; color: var(--accent); font-weight: 600; white-space: nowrap; }
 .post-cta > span { transition: transform var(--motion-normal) var(--motion-ease); }
 .post-card:hover .post-cta > span, .post-card:focus-visible .post-cta > span { transform: translateX(4px); }
@@ -750,7 +750,12 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
 }
 .article-breadcrumb svg { width: 14px; height: 14px; }
 .article-breadcrumb .sep { color: var(--muted-2); opacity: 0.6; }
+.article-breadcrumb > a, .article-breadcrumb .sep { flex-shrink: 0; }
 .article-breadcrumb .current {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--text-2);
   font-weight: 600;
   padding: 6px 0;
