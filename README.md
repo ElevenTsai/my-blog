@@ -4,6 +4,8 @@
 
 网站：https://eleventsai.github.io/my-blog/
 
+站点由 GitHub Actions 自动构建并发布到 GitHub Pages。
+
 本仓库为自动生成的公开副本，请在主仓修改后同步，避免直接编辑此副本。
 
 Node.js 22.23.2：`npm ci`、`npm run build`。构建输出为 `dist/`。
