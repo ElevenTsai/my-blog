@@ -1,0 +1,21 @@
+{
+  "tagline": "工具、技术与日常思考。",
+  "introduction": "记录实用的效率工具、技术笔记和学习过程。",
+  "explore": "阅读文章，了解常用工具和实践经验。",
+  "changelog": "后续的站点变更、工具发现和文章发布都会在这里留痕。",
+  "manualUrl": "",
+  "cards": [
+    {
+      "href": "/posts/",
+      "title": "文章",
+      "description": "技术笔记、效率工具与实践经验。当前收录《日常工作效率宝典》，涵盖 Windows/Linux 操作技巧、终端工具、剪贴板增强和跨设备同步。",
+      "variant": "amber",
+      "icon": "book",
+      "meta": [
+        "效率工具",
+        "技术笔记"
+      ],
+      "external": false
+    }
+  ]
+}

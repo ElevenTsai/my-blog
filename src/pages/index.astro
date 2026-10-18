@@ -1,0 +1,85 @@
+---
+// Home page: Hero + 3 feature cards + changelog empty state
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FeatureCard from '../components/FeatureCard.astro';
+import { showWork, sitePath } from '../lib/site';
+import home from '../data/home.json';
+---
+<BaseLayout
+  title="蔡世逸的个人站"
+  description={home.tagline}
+  current="home"
+  showStarfield={true}
+>
+  <main class="page">
+    <header class="hero reveal">
+      <div class="hero-avatar-wrap">
+        <img class="hero-avatar" src={sitePath("/avatar.jpg")} alt="蔡世逸的 AI 头像" width="128" height="128" />
+      </div>
+      <span class="badge">PERSONAL · SITE</span>
+      <h1>蔡世逸的个人站</h1>
+      <p class="tagline">
+        {home.tagline}<br />
+        {home.introduction}
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href={sitePath(showWork ? "/work/" : "/posts/")}>
+          {showWork ? "浏览工作" : "阅读文章"}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 5l7 7-7 7"></path>
+          </svg>
+        </a>
+        {home.manualUrl && <a
+          class="btn btn-secondary"
+          href={home.manualUrl}
+          target="_blank"
+          rel="noopener"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 3h7v7M10 14L21 3M21 14v7H3V3h7"></path>
+          </svg>
+          个人说明书
+        </a>}
+      </div>
+    </header>
+
+    <section class="section reveal d1">
+      <div class="section-head">
+        <span class="section-eyebrow">Explore</span>
+        <h2 class="section-title">从这里开始</h2>
+        <p class="section-sub">{home.explore}</p>
+      </div>
+
+      <div class:list={["card-grid", { "public-card-grid": !showWork }]}>
+        {home.cards.map((card, index) => <FeatureCard
+          href={card.href} title={card.title} description={card.description}
+          variant={card.variant as 'indigo' | 'amber' | 'rose'}
+          icon={card.icon as 'wrench' | 'book' | 'user'} meta={card.meta}
+          external={card.external} arrow={card.external ? '↗' : '→'}
+          revealDelay={((index % 4) + 1) as 1 | 2 | 3 | 4}
+        />)}
+      </div>
+    </section>
+
+    <section class="section reveal d2">
+      <div class="section-head">
+        <span class="section-eyebrow">Changelog</span>
+        <h2 class="section-title">最近更新</h2>
+        <p class="section-sub">站点迭代与内容更新。</p>
+      </div>
+
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <h3>更新日志即将上线</h3>
+        <p>
+          {home.changelog}
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

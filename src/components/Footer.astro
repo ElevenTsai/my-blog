@@ -1,0 +1,29 @@
+---
+import { showWork, sitePath } from '../lib/site';
+import home from '../data/home.json';
+interface Props {
+  sourceDocUrl?: string;
+}
+const { sourceDocUrl } = Astro.props;
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div>
+    © {year} 蔡世逸的个人站{showWork ? ' · 内部使用' : ''}
+    {sourceDocUrl && (
+      <>
+        {' · 内容参考自 '}
+        <a href={sourceDocUrl} target="_blank" rel="noopener">飞书文档</a>
+      </>
+    )}
+  </div>
+  <div class="footer-links">
+    <a href={sitePath("/")}>首页</a>
+    {showWork && <a href={sitePath("/work/")}>工作</a>}
+    <a href={sitePath("/posts/")}>文章</a>
+    {home.manualUrl && <a
+      href={home.manualUrl}
+      target="_blank"
+      rel="noopener">个人说明书 ↗</a>}
+  </div>
+</footer>

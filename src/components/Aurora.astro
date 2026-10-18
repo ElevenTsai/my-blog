@@ -1,0 +1,13 @@
+---
+// Background aurora blobs + grid overlay. Placed once per page.
+interface Props {
+  showGrid?: boolean;
+}
+const { showGrid = true } = Astro.props;
+---
+<div class="aurora" aria-hidden="true">
+  <span class="a1"></span>
+  <span class="a2"></span>
+  <span class="a3"></span>
+</div>
+{showGrid && <div class="grid-overlay" aria-hidden="true"></div>}

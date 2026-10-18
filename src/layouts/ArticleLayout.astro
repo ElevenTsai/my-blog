@@ -1,0 +1,115 @@
+---
+// Layout for long-form article pages: adds reading progress, TOC sidebar, back-to-top.
+import BaseLayout from './BaseLayout.astro';
+import BackToTop from '../components/BackToTop.astro';
+import TocToggle from '../components/TocToggle.astro';
+import { highlightDocument } from '../lib/highlight-document';
+import { sitePath, siteHtml } from '../lib/site';
+
+interface TocEntry {
+  level: number;
+  id: string;
+  text: string;
+  sourceId?: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  sourceDocUrl?: string;
+  current?: 'work' | 'posts';
+  bodyClass?: string;
+  highlightCode?: boolean;
+  syncedAt?: string;
+  sourceRevision?: number;
+  breadcrumb: { label: string; href?: string }[];
+  toc: TocEntry[];
+  contentHtml?: string;
+}
+const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision } = Astro.props;
+const syncLabel = syncedAt ? new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(syncedAt)) : '';
+
+const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocument(contentHtml) : contentHtml) : contentHtml;
+---
+<BaseLayout
+  title={`${title} · 蔡世逸的个人站`}
+  description={description}
+  current={current}
+  bodyClass={`article-page document-page ${bodyClass}`}
+>
+  {toc.length > 0 && <TocToggle />}
+
+  <nav class="article-breadcrumb" aria-label="面包屑">
+    {breadcrumb.map((crumb, i) => (
+      <>
+        {i > 0 && <span class="sep">/</span>}
+        {crumb.href ? (
+          <a href={sitePath(crumb.href)}>
+            {i === 0 && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            )}
+            {i === 1 && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            )}
+            {crumb.label}
+          </a>
+        ) : (
+          <span class="current">{crumb.label}</span>
+        )}
+      </>
+    ))}
+  </nav>
+
+  <div class="document-toolbar">
+    <div class="document-meta">
+      <slot name="metadata" />
+      {syncLabel && <span title={`网页为同步副本，飞书版本 ${sourceRevision ?? ''}`}>同步于 <time datetime={syncedAt}>{syncLabel}</time></span>}
+    </div>
+    {sourceDocUrl
+      ? <a class="document-action" href={sourceDocUrl} target="_blank" rel="noopener">在飞书中打开 ↗</a>
+      : <a class="document-action" href={sitePath(current === 'work' ? '/work/' : '/posts/')}>返回{current === 'work' ? '工作' : '文章'}列表</a>}
+  </div>
+
+  <main class="article-layout">
+    <article class="article-content">
+      {renderedHtml ? <Fragment set:html={renderedHtml} /> : <slot />}
+      {sourceDocUrl && <div class="article-footer-note">
+        <p>
+          内容来自飞书文档
+          <a href={sourceDocUrl} target="_blank" rel="noopener">{title} ↗</a>
+          。网页为同步副本，最新内容请查看原文。
+        </p>
+      </div>}
+    </article>
+
+    <aside class="article-sidebar" id="article-toc">
+      {toc.length > 0 && (
+        <nav class="article-toc" aria-label="目录">
+          <div class="toc-heading"><div class="toc-title">本文目录</div><button class="toc-close" type="button" aria-label="关闭目录">关闭</button></div>
+          {toc.filter((t) => t.level >= 2).map((t) => (
+            <div class="toc-entry">
+              <a
+                class={`toc-link toc-l${t.level}`}
+                href={`#${t.id}`}
+                data-target={t.id}
+                title={t.text}
+                style={`--indent: ${t.level - 2}`}
+              >{t.text}</a>
+              {sourceDocUrl && t.sourceId && <a class="toc-source" href={`${sourceDocUrl}#${t.sourceId}`} target="_blank" rel="noopener" aria-label={`在飞书中打开：${t.text}`} title="在飞书中打开本节">↗</a>}
+            </div>
+          ))}
+        </nav>
+      )}
+    </aside>
+  </main>
+
+  <BackToTop />
+
+  <script>import '../scripts/article.js';</script>
+</BaseLayout>

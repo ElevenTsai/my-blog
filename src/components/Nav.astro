@@ -1,0 +1,53 @@
+---
+import { showWork, sitePath } from '../lib/site';
+import home from '../data/home.json';
+interface Props {
+  current: 'home' | 'work' | 'posts';
+}
+const { current } = Astro.props;
+const isActive = (key: Props['current']) => (current === key ? 'active' : '');
+---
+<nav class="site-nav" aria-label="主导航" transition:persist="site-nav" transition:animate="none">
+  <div class="nav-inner">
+    <a class="nav-brand" href={sitePath("/")}>
+      <img class="brand-logo" src={sitePath("/avatar.jpg")} alt="蔡世逸的头像" width="32" height="32" />
+      <span>蔡世逸的个人站</span>
+    </a>
+    <div class="nav-links">
+      <span class="nav-indicator" aria-hidden="true"></span>
+      <a href={sitePath("/")} data-astro-prefetch="hover" class={isActive('home')} aria-current={current === 'home' ? 'page' : undefined}>首页</a>
+      <!-- Work navigation exists only in the internal build. -->
+      {showWork && <a href={sitePath("/work/")} data-astro-prefetch="hover" class={isActive('work')} aria-current={current === 'work' ? 'page' : undefined}>工作</a>}
+      <a href={sitePath("/posts/")} data-astro-prefetch="hover" class={isActive('posts')} aria-current={current === 'posts' ? 'page' : undefined}>文章</a>
+      {home.manualUrl && <a
+        href={home.manualUrl}
+        target="_blank"
+        rel="noopener"
+        class="external">个人说明书</a>}
+    </div>
+    <div class="nav-actions">
+      <div class="theme-switch" role="group" aria-label="主题切换">
+        <button type="button" data-theme-value="light" aria-pressed="true" title="浅色模式">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <span class="label">浅色</span>
+        </button>
+        <button type="button" data-theme-value="dark" aria-pressed="false" title="深色模式">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span class="label">深色</span>
+        </button>
+        <button type="button" data-theme-value="auto" aria-pressed="false" title="跟随系统">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="4" width="20" height="13" rx="2"></rect>
+            <path d="M8 21h8M12 17v4"></path>
+          </svg>
+          <span class="label">跟随系统</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
