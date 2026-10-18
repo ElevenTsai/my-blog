@@ -50,6 +50,7 @@ const { slug } = Astro.params;
   sourceDocUrl={post.docUrl}
   syncedAt={post.syncedAt}
   updatedAt={post.updatedAt}
+  syncDocument={slug === 'efficiency' ? 'efficiency' : undefined}
   sourceRevision={post.sourceRevision}
   breadcrumb={[
     { label: '首页', href: '/' },

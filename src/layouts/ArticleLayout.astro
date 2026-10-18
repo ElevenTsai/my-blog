@@ -3,8 +3,9 @@
 import BaseLayout from './BaseLayout.astro';
 import BackToTop from '../components/BackToTop.astro';
 import TocToggle from '../components/TocToggle.astro';
+import DocumentSync from '../components/DocumentSync.astro';
 import { highlightDocument } from '../lib/highlight-document';
-import { sitePath, siteHtml } from '../lib/site';
+import { showWork, sitePath, siteHtml } from '../lib/site';
 import { estimateReadingMinutes, formatReadingTime, formatArticleDate } from '../lib/article-meta';
 
 interface TocEntry {
@@ -26,11 +27,12 @@ interface Props {
   readingMinutes?: number;
   publishedAt?: string;
   updatedAt?: string;
+  syncDocument?: 'highlight' | 'efficiency';
   breadcrumb: { label: string; href?: string }[];
   toc: TocEntry[];
   contentHtml?: string;
 }
-const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision, readingMinutes, publishedAt, updatedAt } = Astro.props;
+const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision, readingMinutes, publishedAt, updatedAt, syncDocument } = Astro.props;
 const readingLabel = formatReadingTime(readingMinutes ?? estimateReadingMinutes(contentHtml ?? ''));
 
 const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocument(contentHtml) : contentHtml) : contentHtml;
@@ -81,6 +83,8 @@ const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocum
       ? <a class="document-action" href={sourceDocUrl} target="_blank" rel="noopener">在飞书中打开 ↗</a>
       : <a class="document-action" href={sitePath(current === 'work' ? '/work/' : '/posts/')}>返回{current === 'work' ? '工作' : '文章'}列表</a>}
   </div>
+
+  {showWork && syncDocument && <DocumentSync document={syncDocument} revision={sourceRevision} />}
 
   <main class="article-layout">
     <article class="article-content">
