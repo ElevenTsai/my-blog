@@ -1,6 +1,7 @@
 ---
 // Layout for long-form article pages: adds reading progress, TOC sidebar, back-to-top.
 import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 import BackToTop from '../components/BackToTop.astro';
 import TocToggle from '../components/TocToggle.astro';
 import DocumentSync from '../components/DocumentSync.astro';
@@ -45,32 +46,7 @@ const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocum
 >
   {toc.length > 0 && <TocToggle />}
 
-  <nav class="article-breadcrumb" aria-label="面包屑">
-    {breadcrumb.map((crumb, i) => (
-      <>
-        {i > 0 && <span class="sep">/</span>}
-        {crumb.href ? (
-          <a href={sitePath(crumb.href)}>
-            {i === 0 && (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-            )}
-            {i === 1 && (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
-            )}
-            {crumb.label}
-          </a>
-        ) : (
-          <span class="current" title={crumb.label}>{crumb.label}</span>
-        )}
-      </>
-    ))}
-  </nav>
+  <Breadcrumb items={breadcrumb} />
 
   <div class="document-toolbar">
     <div class="document-meta">

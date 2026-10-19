@@ -33,7 +33,6 @@
   --accent-soft: #25324d;
 }
 .document-page .reading-progress { display: none; }
-.document-page .article-breadcrumb { max-width: 1240px; padding: 16px 32px 8px; margin: 0 auto; font-size: 13px; }
 .document-toolbar { max-width: 1240px; padding: 0 32px; margin: 0 auto; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--fs-line); }
 .document-meta { color: var(--fs-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .document-action { color: var(--fs-link); font-size: 13px; white-space: nowrap; padding: 12px 0; }
@@ -104,7 +103,6 @@
   .document-page .toc-link { min-height: 44px; padding-top: 11px; padding-bottom: 11px; line-height: 22px; }
 }
 @media (max-width: 600px) {
-  .document-page .article-breadcrumb { padding: 12px 20px 4px; }
   .document-toolbar { padding: 0 20px; gap: 12px; }
   .document-toolbar .document-meta { flex-basis: 100%; }
   .document-meta { font-size: 11px; padding: 4px 0 8px; }

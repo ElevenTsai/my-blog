@@ -717,50 +717,6 @@ code, kbd, pre { font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, mono
 .post-card:hover .post-cta > span, .post-card:focus-visible .post-cta > span { transform: translateX(4px); }
 @media (max-width: 600px) { .post-card { padding: 22px; } }
 
-/* Breadcrumb / back link on article detail page */
-.article-breadcrumb {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 20px 24px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--muted);
-}
-.article-breadcrumb a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  transition:
-    color var(--motion-fast) var(--motion-ease),
-    background-color var(--motion-fast) var(--motion-ease),
-    border-color var(--motion-fast) var(--motion-ease);
-  font-weight: 500;
-}
-.article-breadcrumb a:hover {
-  color: var(--accent);
-  background: var(--surface-inset);
-  border-color: var(--border);
-}
-.article-breadcrumb svg { width: 14px; height: 14px; }
-.article-breadcrumb .sep { color: var(--muted-2); opacity: 0.6; }
-.article-breadcrumb > a, .article-breadcrumb .sep { flex-shrink: 0; }
-.article-breadcrumb .current {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-2);
-  font-weight: 600;
-  padding: 6px 0;
-}
-
 /* ---------- Post list (empty state) ---------- */
 .empty-state {
   background: var(--surface);

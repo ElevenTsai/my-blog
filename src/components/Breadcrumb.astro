@@ -1,0 +1,62 @@
+---
+import { sitePath } from '../lib/site';
+interface Props { items: { label: string; href?: string }[] }
+const { items } = Astro.props;
+const crumbs = items[0]?.href === '/' ? items : [{ label: '首页', href: '/' }, ...items];
+---
+<nav class="site-breadcrumb" aria-label="面包屑">
+  <ol>
+    {crumbs.map((crumb, index) => <li>
+      {index > 0 && <span class="separator" aria-hidden="true">/</span>}
+      {crumb.href ? <a href={sitePath(crumb.href)} data-astro-prefetch="hover">
+        {crumb.href === '/' && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M9 22V12h6v10" />
+        </svg>}
+        {(crumb.href === '/work/' || crumb.href === '/posts/') && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </svg>}
+        {crumb.label}
+      </a> : <span class="current" aria-current="page" title={crumb.label}>{crumb.label}</span>}
+    </li>)}
+  </ol>
+</nav>
+<style>
+  .site-breadcrumb {
+    --crumb-text: #1f2329;
+    --crumb-muted: #646a73;
+    --crumb-accent: #245bdb;
+    --crumb-hover: #f5f6f7;
+    --crumb-border: #dee0e3;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 16px 32px 8px;
+    font: 500 13px / 1.5 -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+    color: var(--crumb-muted);
+  }
+  :global(:root[data-theme="dark"]) .site-breadcrumb {
+    --crumb-text: #e8e8e8;
+    --crumb-muted: #a6a6a6;
+    --crumb-accent: #7ba6ff;
+    --crumb-hover: #262626;
+    --crumb-border: #434343;
+  }
+  ol { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  li { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  li:last-child { flex-shrink: 1; min-width: 0; }
+  .separator { color: var(--crumb-muted); flex-shrink: 0; }
+  a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 12px; color: var(--crumb-muted); text-decoration: none; white-space: nowrap; border: 1px solid transparent; border-radius: 8px;
+    transition: color 180ms var(--motion-ease), background-color 180ms var(--motion-ease), border-color 180ms var(--motion-ease); }
+  a:hover, a:focus-visible { color: var(--crumb-accent); background: var(--crumb-hover); border-color: var(--crumb-border); }
+  a:focus-visible { outline: 2px solid var(--crumb-accent); outline-offset: 2px; }
+  svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .current { display: block; min-width: 0; padding: 12px 0; color: var(--crumb-text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (max-width: 700px) {
+    .site-breadcrumb { padding: 12px 20px 4px; }
+    ol { flex-wrap: wrap; gap: 0 6px; }
+    li { gap: 6px; }
+    li:last-child { flex: 1 1 auto; }
+    a { padding-inline: 8px; }
+  }
+  @media (max-width: 380px) { .site-breadcrumb { padding-inline: 16px; } }
+  @media (prefers-reduced-motion: reduce) { a { transition: none; } }
+</style>
