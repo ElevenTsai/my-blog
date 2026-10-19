@@ -2,7 +2,7 @@
 
 工具、技术与日常思考。
 
-网站：https://eleventsai.github.io/my-blog/
+网站：https://eleventsai.github.io/my-space/
 
 站点由 GitHub Actions 自动构建并发布到 GitHub Pages。
 

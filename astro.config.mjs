@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-const target = new URL(process.env.SITE_URL || 'https://eleventsai.github.io/my-blog/');
+const target = new URL(process.env.SITE_URL || 'https://eleventsai.github.io/my-space/');
 const base = process.env.SITE_BASE ?? target.pathname;
 
 // https://astro.build/config
