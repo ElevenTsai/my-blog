@@ -40,7 +40,7 @@ const readingLabel = formatReadingTime(readingMinutes ?? estimateReadingMinutes(
 const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocument(contentHtml) : contentHtml) : contentHtml;
 ---
 <BaseLayout
-  title={`${title} · 蔡世逸的个人站`}
+  title={title}
   description={description}
   current={current}
   bodyClass={`article-page document-page ${bodyClass}`}
