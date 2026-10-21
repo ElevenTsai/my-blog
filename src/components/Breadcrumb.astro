@@ -22,23 +22,16 @@ const crumbs = items[0]?.href === '/' ? items : [{ label: '首页', href: '/' },
 </nav>
 <style>
   .site-breadcrumb {
-    --crumb-text: #1f2329;
-    --crumb-muted: #646a73;
-    --crumb-accent: #245bdb;
-    --crumb-hover: #f5f6f7;
-    --crumb-border: #dee0e3;
-    max-width: 1240px;
+    --crumb-text: var(--text);
+    --crumb-muted: var(--muted);
+    --crumb-accent: var(--accent);
+    --crumb-hover: var(--surface-soft);
+    --crumb-border: var(--line);
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 16px 32px 8px;
-    font: 500 13px / 1.5 -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+    padding: 16px var(--gutter) 8px;
+    font: 400 14px / 1.5 var(--font-sans);
     color: var(--crumb-muted);
-  }
-  :global(:root[data-theme="dark"]) .site-breadcrumb {
-    --crumb-text: #e8e8e8;
-    --crumb-muted: #a6a6a6;
-    --crumb-accent: #7ba6ff;
-    --crumb-hover: #262626;
-    --crumb-border: #434343;
   }
   ol { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
   li { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -51,7 +44,7 @@ const crumbs = items[0]?.href === '/' ? items : [{ label: '首页', href: '/' },
   svg { width: 14px; height: 14px; flex-shrink: 0; }
   .current { display: block; min-width: 0; padding: 12px 0; color: var(--crumb-text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   @media (max-width: 700px) {
-    .site-breadcrumb { padding: 12px 20px 4px; }
+    .site-breadcrumb { padding: 12px var(--gutter) 4px; }
     ol { flex-wrap: wrap; gap: 0 6px; }
     li { gap: 6px; }
     li:last-child { flex: 1 1 auto; }

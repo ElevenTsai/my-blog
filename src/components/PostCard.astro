@@ -7,11 +7,10 @@ interface Props {
   excerpt: string;
   tags: { label: string }[];
   readingMinutes: number;
-  revealDelay?: 1 | 2 | 3 | 4;
 }
-const { href, title, excerpt, tags, readingMinutes, revealDelay = 1 } = Astro.props;
+const { href, title, excerpt, tags, readingMinutes } = Astro.props;
 ---
-<a data-astro-prefetch="hover" href={sitePath(href)} class={`post-card reveal d${revealDelay}`}>
+<a data-astro-prefetch="hover" href={sitePath(href)} class="post-card row-reveal">
   <div class="post-tags">
     {tags.map(tag => <span class="post-tag">{tag.label}</span>)}
   </div>

@@ -3,10 +3,10 @@
 import '../styles/global.css';
 import '../styles/document.css';
 import '../styles/experience.css';
+import '../styles/space.css';
+import SpaceBackground from '../components/SpaceBackground.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import Aurora from '../components/Aurora.astro';
-import Starfield from '../components/Starfield.astro';
 import { ClientRouter } from 'astro:transitions';
 import { sitePath } from '../lib/site';
 
@@ -16,7 +16,6 @@ interface Props {
   current: 'home' | 'work' | 'posts';
   sourceDocUrl?: string;
   bodyClass?: string;
-  showStarfield?: boolean;
   head?: string; // Extra raw HTML for <head> (Prism CDN etc.)
 }
 const {
@@ -25,7 +24,6 @@ const {
   current,
   sourceDocUrl,
   bodyClass = '',
-  showStarfield = true,
   head = '',
 } = Astro.props;
 ---
@@ -36,14 +34,17 @@ const {
   <script is:inline>
     (() => {
       const root = document.documentElement;
-      let choice = 'light';
+      // Only the initial document may play the home entrance; SPA swaps have their own reveal.
+      if (!window.__mySpaceLoaded) {
+        window.__mySpaceLoaded = true;
+        root.setAttribute('data-initial-page', '');
+      }
+      let choice = 'auto';
       try { choice = localStorage.getItem('highlight-info-theme') || choice; } catch {}
-      if (!['light', 'dark', 'auto'].includes(choice)) choice = 'light';
+      if (!['light', 'dark', 'auto'].includes(choice)) choice = 'auto';
       root.dataset.motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'still' : 'full';
       root.dataset.theme = choice === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : choice;
       root.dataset.themeChoice = choice;
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) root.dataset.motionReady = '';
-      setTimeout(() => { if (!window.__motionInitialized) root.removeAttribute('data-motion-ready'); }, 1500);
     })();
   </script>
   <ClientRouter fallback="swap" />
@@ -56,14 +57,14 @@ const {
   <link rel="icon" type="image/png" sizes="16x16" href={sitePath("/favicon-16x16.png")} />
   <link rel="apple-touch-icon" sizes="180x180" href={sitePath("/apple-touch-icon.png")} />
   <link rel="manifest" href={sitePath("/site.webmanifest")} />
-  <meta name="theme-color" content="#4f46e5" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#05070d" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#F6F5F2" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
   <Fragment set:html={head} />
 </head>
-<body class={bodyClass} transition:animate="none">
-  <div class="site-background" transition:persist="site-background" transition:animate="none" aria-hidden="true">
-    <Aurora />
-    {showStarfield && <Starfield />}
+<body class={bodyClass}>
+  <SpaceBackground />
+  <div class="site-cursor" aria-hidden="true" inert transition:persist="site-cursor" transition:name="site-cursor" transition:animate="none">
+    <div class="site-cursor-point"></div>
   </div>
   <Nav current={current} />
   <slot />
@@ -73,6 +74,7 @@ const {
   <script>
     import '../scripts/theme.js';
     import '../scripts/interactions.js';
+    import '../scripts/site-cursor.js';
   </script>
 </body>
 </html>

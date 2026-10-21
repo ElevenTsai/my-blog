@@ -1,0 +1,17 @@
+---
+import { sitePath } from '../lib/site';
+interface Props { src: string; darkSrc?: string }
+const { src, darkSrc } = Astro.props;
+---
+<span class:list={['system-logo', { 'system-logo--themed': darkSrc }]} aria-hidden="true">
+  <img src={sitePath(src)} alt="" width="40" height="40" decoding="async" />
+  {darkSrc && <img class="system-logo-dark" src={sitePath(darkSrc)} alt="" width="40" height="40" decoding="async" />}
+</span>
+<style>
+  .system-logo { display: block; width: var(--brand-size, 32px); height: var(--brand-size, 32px); flex-shrink: 0; }
+  .system-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .system-logo img[src$="/gitlab.png"] { transform: scale(1.8); }
+  .system-logo img.system-logo-dark { display: none; }
+  :global(:root[data-theme="dark"]) .system-logo--themed img { display: none; }
+  :global(:root[data-theme="dark"]) .system-logo--themed img.system-logo-dark { display: block; }
+</style>

@@ -1,0 +1,63 @@
+---
+// Build-time seeded sky; navigation preserves the scene and its CSS animation phases.
+let seed = 74219;
+const random = () => {
+  seed = (seed * 16807) % 2147483647;
+  return (seed - 1) / 2147483646;
+};
+const stars = Array.from({ length: 180 }, (_, index) => ({
+  x: (random() * 1600).toFixed(2),
+  y: (random() * 1000).toFixed(2),
+  radius: (index < 18 ? .85 + random() * .25 : .5 + random() * .3).toFixed(2),
+  opacity: (index < 18 ? .95 + random() * .05 : .8 + random() * .18).toFixed(2),
+}));
+const dust = Array.from({ length: 240 }, () => {
+  const x = random() * 1600;
+  const spread = (random() + random() + random() - 1.5) * 170;
+  return { x: x.toFixed(2), y: (800 - x * .42 + spread).toFixed(2), radius: (.25 + random() * .25).toFixed(2), opacity: (.35 + random() * .2).toFixed(2) };
+});
+// Fixed stars with independent, shallow brightness variation, as seen from the ground.
+const appearance = () => {
+  const warm = random() > .8;
+  const hue = warm ? 35 + random() * 10 : 200 + random() * 25;
+  const color = `hsl(${hue.toFixed(1)} ${(25 + random() * 30).toFixed(1)}% ${(93 + random() * 6).toFixed(1)}%)`;
+  const low = (.82 + random() * .1).toFixed(2);
+  return { color, motion: `--twinkle-low: ${low}; --star-duration: ${(6 + random() * 10).toFixed(1)}s; --star-delay: -${(random() * 32).toFixed(1)}s` };
+};
+const coloredStars = stars.map(star => ({ ...star, ...appearance() }));
+const coloredDust = dust.map(star => ({ ...star, ...appearance() }));
+const meteors = [
+  { x: 900, y: 110, angle: 26, delay: 8 },
+  { x: 180, y: 380, angle: 32, delay: 33 },
+  { x: 1120, y: 440, angle: 22, delay: 61 },
+];
+---
+<div class="space-background" aria-hidden="true" inert transition:persist="space-background">
+  <svg class="space-stars" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="currentColor" focusable="false">
+    <defs>
+      <linearGradient id="space-meteor-tail" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#BBD7FF" stop-opacity="0" />
+        <stop offset=".75" stop-color="#DDEBFF" stop-opacity=".45" />
+        <stop offset="1" stop-color="#F5F8FF" />
+      </linearGradient>
+    </defs>
+    <g class="space-dust">
+      {coloredDust.map(star => <g opacity={star.opacity}><circle class="space-star" cx={star.x} cy={star.y} r={star.radius} fill={star.color} style={star.motion} /></g>)}
+    </g>
+    <g>
+      {coloredStars.map(star => <g opacity={star.opacity}><circle class="space-star" cx={star.x} cy={star.y} r={star.radius} fill={star.color} style={star.motion} /></g>)}
+    </g>
+    {meteors.map(meteor => <g transform={`translate(${meteor.x} ${meteor.y}) rotate(${meteor.angle})`}>
+      <g class="space-meteor" style={`--meteor-delay: ${meteor.delay}s`}>
+        <path d="M-140 0 L0 -1 L0 1 Z" fill="url(#space-meteor-tail)" />
+        <circle r="1.4" fill="#F5F8FF" />
+      </g>
+    </g>)}
+  </svg>
+</div>
+<script>
+  const updateVisibility = () => document.documentElement.toggleAttribute('data-sky-active', !document.hidden);
+  document.addEventListener('visibilitychange', updateVisibility);
+  document.addEventListener('astro:page-load', updateVisibility);
+  updateVisibility();
+</script>

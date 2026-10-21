@@ -4,23 +4,21 @@ interface Props {
   href: string;
   title: string;
   description: string;
-  variant: 'indigo' | 'amber' | 'cyan' | 'rose' | 'emerald';
   meta: string[];
   arrow?: '→' | '↗';
   external?: boolean;
+  bandReveal?: boolean;
   icon: 'wrench' | 'book' | 'user' | 'star' | 'code';
-  revealDelay?: 1 | 2 | 3 | 4;
 }
 const {
   href,
   title,
   description,
-  variant,
   meta,
   arrow = '→',
   external = false,
+  bandReveal = false,
   icon,
-  revealDelay = 1,
 } = Astro.props;
 
 const iconPaths: Record<string, string> = {
@@ -33,24 +31,27 @@ const iconPaths: Record<string, string> = {
 ---
 <a
   href={sitePath(href)}
-  class={`feature-card ${variant} reveal d${revealDelay}`}
+  class="feature-card row-reveal"
+  data-band-reveal={bandReveal || undefined}
   target={external ? '_blank' : undefined}
   rel={external ? 'noopener' : undefined}
 >
-  <div class="feature-icon">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d={iconPaths[icon]}></path>
-    </svg>
-  </div>
-  <h3 class="feature-title">{title}</h3>
-  <p class="feature-desc">{description}</p>
-  <div class="feature-meta">
-    {meta.map((m, i) => (
-      <>
-        {i > 0 && <span>·</span>}
-        <span>{m}</span>
-      </>
-    ))}
-    <span class="feature-arrow">{arrow}</span>
+  <div class="feature-card-content">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d={iconPaths[icon]}></path>
+      </svg>
+    </div>
+    <h3 class="feature-title">{title}</h3>
+    <p class="feature-desc">{description}</p>
+    <div class="feature-meta">
+      {meta.map((m, i) => (
+        <>
+          {i > 0 && <span>·</span>}
+          <span>{m}</span>
+        </>
+      ))}
+      <span class="feature-arrow">{arrow}</span>
+    </div>
   </div>
 </a>

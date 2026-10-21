@@ -1,0 +1,41 @@
+/* Dark-mode atmosphere. One persistent sky, with the same brightness on every route. */
+body { isolation: isolate; }
+.space-background { display: none; }
+:root[data-theme="dark"] .space-background {
+  display: block; position: fixed; inset: 0; z-index: -1;
+  pointer-events: none; overflow: clip; contain: strict;
+  color: var(--sky-star); opacity: 1;
+  /* One fixed mask across routes: navigation never dims the sky. */
+  mask-image: radial-gradient(ellipse at 38% 34%, #000c, #000f 60%);
+}
+.space-stars { display: block; width: 100%; height: 100%; }
+.space-dust { opacity: 1; }
+.space-meteor { display: none; opacity: 0; }
+@media (min-width: 701px) and (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  :root[data-theme="dark"] .space-star {
+    animation: star-breathe var(--star-duration) ease-in-out var(--star-delay) infinite alternate;
+    animation-play-state: paused;
+  }
+  :root[data-theme="dark"] :is(.home-page, .collection-page) .space-meteor {
+    display: block; animation: meteor-pass 84s linear var(--meteor-delay) infinite;
+    animation-play-state: paused;
+  }
+  :root[data-theme="dark"][data-sky-active]:not([data-page-transition]) .space-star,
+  :root[data-theme="dark"][data-sky-active]:not([data-page-transition]) .space-meteor { animation-play-state: running; }
+}
+@keyframes star-breathe { from { opacity: var(--twinkle-low); } to { opacity: 1; } }
+/* Each pass lasts 1.5s; the rest of the 84s cycle stays invisible. */
+@keyframes meteor-pass {
+  0% { opacity: 0; transform: translateX(0); }
+  .2% { opacity: .9; }
+  1% { opacity: .75; }
+  1.8% { opacity: 0; transform: translateX(460px); }
+  100% { opacity: 0; transform: translateX(460px); }
+}
+@media (max-width: 700px) {
+  :root[data-theme="dark"] .space-background { opacity: .9; }
+  .space-dust { display: none; }
+}
+@media (forced-colors: active), print {
+  .space-background { display: none !important; }
+}

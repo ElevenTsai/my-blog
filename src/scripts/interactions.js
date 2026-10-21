@@ -3,6 +3,23 @@ import { navigationPath } from '../lib/site';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const ease = 'cubic-bezier(.22,1,.36,1)';
 const still = () => reduced.matches || document.documentElement.dataset.motion === 'still';
+if (document.documentElement.hasAttribute('data-initial-page')) {
+  const entranceEvents = new AbortController();
+  const stopEntrance = () => {
+    document.documentElement.removeAttribute('data-initial-page');
+    entranceEvents.abort();
+  };
+  for (const name of ['pointerdown', 'keydown', 'astro:before-preparation', 'visibilitychange']) {
+    document.addEventListener(name, stopEntrance, { once: true, signal: entranceEvents.signal });
+  }
+  for (const name of ['animationend', 'animationcancel']) {
+    document.addEventListener(name, event => {
+      if (event.animationName === 'home-develop') stopEntrance();
+    }, { signal: entranceEvents.signal });
+  }
+  window.addEventListener('motionchange', stopEntrance, { once: true, signal: entranceEvents.signal });
+}
+
 let indicatorAnimation, indicatorFrame, indicatorReady = false;
 const nav = document.querySelector('.nav-links');
 const indicator = nav?.querySelector('.nav-indicator');
@@ -11,16 +28,18 @@ function moveIndicator(link, animate = true) {
   // Read the current animated box before canceling, so a new target never resets it.
   const origin = nav.getBoundingClientRect(), target = link.getBoundingClientRect();
   const previous = indicator.getBoundingClientRect();
-  indicatorAnimation?.cancel();
-  const x = target.left - origin.left, y = target.top - origin.top;
+  const width = Math.max(12, target.width - 24), height = 2;
+  const x = target.left - origin.left + 12, y = target.bottom - origin.top - height;
   const transform = `translate(${x}px, ${y}px)`;
-  Object.assign(indicator.style, { width: `${target.width}px`, height: `${target.height}px`, transform });
+  if (indicatorReady && indicator.style.width === `${width}px` && indicator.style.transform === transform) return;
+  indicatorAnimation?.cancel();
+  Object.assign(indicator.style, { width: `${width}px`, height: `${height}px`, transform });
   nav.dataset.indicatorReady = '';
   if (animate && indicatorReady && !still()) {
     indicatorAnimation = indicator.animate([
-      { transform: `translate(${previous.left - origin.left}px, ${previous.top - origin.top}px) scale(${previous.width / target.width}, ${previous.height / target.height})` },
+      { transform: `translate(${previous.left - origin.left}px, ${previous.top - origin.top}px) scale(${previous.width / width}, ${previous.height / height})` },
       { transform },
-    ], { duration: 260, easing: ease });
+    ], { duration: 180, easing: ease });
     const animation = indicatorAnimation;
     animation.finished.then(() => { if (indicatorAnimation === animation) indicatorAnimation = null; }, () => {});
   }
@@ -63,80 +82,56 @@ document.addEventListener('keydown', event => {
 });
 document.addEventListener('keyup', clearPress);
 
-// Share only the chosen title, rather than morphing a whole page or reading column.
-let shared = null, generation = 0, loadingTimer;
-function finishNavigation(resume = true) {
-  clearTimeout(loadingTimer);
-  delete document.documentElement.dataset.navigationLoading;
-  if (resume) window.dispatchEvent(new Event('site:navigation-end'));
-}
-document.addEventListener('astro:after-swap', finishNavigation);
-function visible(element) {
-  if (!element) return false;
-  const box = element.getBoundingClientRect();
-  const navBottom = document.querySelector('.site-nav')?.getBoundingClientRect().bottom || 0;
-  return box.width > 0 && box.bottom > navBottom && box.top < innerHeight;
-}
-function matchingCard(doc, path) {
-  return [...doc.querySelectorAll('.post-card, .feature-card')].find(card => new URL(card.getAttribute('href'), location.origin).pathname === path);
-}
-function clearShared(value = shared) {
-  if (!value) return;
-  for (const title of [value.from, value.to]) {
-    title.classList.add('motion-settled');
-    title.closest('.post-card, .feature-card')?.classList.add('motion-settled');
-    title.style.removeProperty('view-transition-name');
-    title.classList.remove('shared-document-title');
-    title.closest('.post-card, .feature-card')?.classList.remove('shared-document-card');
-  }
-  if (shared === value) shared = null;
-}
+// Expand the incoming page from the activated link; no title or layout morphing.
+const origins = new WeakMap();
+let activation, generation = 0;
+document.addEventListener('click', event => {
+  const source = event.target instanceof Element ? event.target.closest('a[href]') : null;
+  activation = source && event.detail > 0 ? { source, x: event.clientX, y: event.clientY } : undefined;
+}, { capture: true });
 document.addEventListener('astro:before-preparation', event => {
   const request = ++generation;
-  finishNavigation(false);
-  loadingTimer = setTimeout(() => { if (request === generation) document.documentElement.dataset.navigationLoading = ''; }, 140);
+  const source = event.sourceElement?.closest('a[href]');
+  const box = source?.getBoundingClientRect();
+  const clicked = source && activation?.source === source ? activation : null;
+  origins.set(event.signal, {
+    request,
+    x: Math.max(0, Math.min(innerWidth, clicked?.x ?? (box ? box.left + box.width / 2 : innerWidth / 2))),
+    y: Math.max(0, Math.min(innerHeight, clicked?.y ?? (box ? box.top + box.height / 2 : innerHeight / 2))),
+  });
+  activation = undefined;
   event.signal.addEventListener('abort', () => {
     if (request !== generation) return;
+    delete document.documentElement.dataset.pageTransition;
     currentIndicator(false);
-    finishNavigation();
   }, { once: true });
   clearPress();
-  clearShared();
   const targetNav = [...(nav?.querySelectorAll('a:not([target])') || [])].find(link => link.getAttribute('href') === navigationPath(event.to.pathname));
   moveIndicator(targetNav);
   const load = event.loader;
   event.loader = async () => {
-    try { await load(); } catch (error) { if (request === generation) { currentIndicator(); finishNavigation(); } throw error; }
-    if (event.signal.aborted || request !== generation || still() || !document.startViewTransition) return;
-    const incoming = event.newDocument;
-    let from, to;
-    if (incoming.querySelector('.article-title')) {
-      from = matchingCard(document, event.to.pathname)?.querySelector('.post-title');
-      to = incoming.querySelector('.article-title');
-    } else if (document.querySelector('.article-title')) {
-      from = document.querySelector('.article-title');
-      to = matchingCard(incoming, event.from.pathname)?.querySelector('.post-title');
-    } else if (incoming.querySelector('.collection-hero h1')) {
-      from = matchingCard(document, event.to.pathname)?.querySelector('.feature-title');
-      to = incoming.querySelector('.collection-hero h1');
-    } else if (document.querySelector('.collection-hero h1')) {
-      from = document.querySelector('.collection-hero h1');
-      to = matchingCard(incoming, event.from.pathname)?.querySelector('.feature-title');
+    try {
+      await load();
+      if (!event.signal.aborted && request === generation) document.documentElement.dataset.pageTransition = '';
     }
-    if (!to || !visible(from)) return;
-    shared = { from, to, request };
-    for (const title of [from, to]) {
-      title.style.viewTransitionName = 'document-title';
-      title.classList.add('shared-document-title');
-      title.closest('.post-card, .feature-card')?.classList.add('shared-document-card', 'in');
+    catch (error) {
+      if (request === generation) { delete document.documentElement.dataset.pageTransition; currentIndicator(); }
+      throw error;
     }
   };
 });
 document.addEventListener('astro:before-swap', event => {
   clearPress();
-  const value = shared;
+  const { x, y, request } = origins.get(event.signal) ?? { x: innerWidth / 2, y: innerHeight / 2, request: generation };
+  const root = event.newDocument.documentElement;
+  root.dataset.pageTransition = '';
+  root.style.setProperty('--page-reveal-x', `${x}px`);
+  root.style.setProperty('--page-reveal-y', `${y}px`);
+  root.style.setProperty('--page-reveal-radius', `${Math.ceil(Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))) + 2}px`);
   if (still()) event.viewTransition?.skipTransition();
-  // ready can reject when a new navigation interrupts the browser transition.
+  // A second navigation can interrupt the browser transition before it becomes ready.
   event.viewTransition?.ready.catch(() => {});
-  event.viewTransition?.finished.then(() => clearShared(value), () => clearShared(value));
+  const finish = () => { if (request === generation) delete document.documentElement.dataset.pageTransition; };
+  if (event.viewTransition) event.viewTransition.finished.then(finish, finish);
+  else finish();
 });

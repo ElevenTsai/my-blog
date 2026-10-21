@@ -19,14 +19,13 @@ const posts = (await loadNotes()).filter(post => post.section === 'posts');
     <section class="collection-content" aria-label="文章列表">
       {posts.length > 0 ? (
         <div class="posts-grid">
-          {posts.map((post, i) => (
+          {posts.map(post => (
             <PostCard
               href={`/posts/${post.slug}.html`}
               title={post.title}
               excerpt={post.excerpt}
               tags={post.tags}
               readingMinutes={post.readingMinutes}
-              revealDelay={((i % 4) + 1) as 1 | 2 | 3 | 4}
             />
           ))}
         </div>

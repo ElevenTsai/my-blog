@@ -1,5 +1,5 @@
 ---
-// Layout for long-form article pages: adds reading progress, TOC sidebar, back-to-top.
+// Layout for long-form article pages: adds TOC sidebar and back-to-top.
 import BaseLayout from './BaseLayout.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import BackToTop from '../components/BackToTop.astro';
@@ -32,8 +32,9 @@ interface Props {
   breadcrumb: { label: string; href?: string }[];
   toc: TocEntry[];
   contentHtml?: string;
+  backLink?: { label: string; href: string };
 }
-const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision, readingMinutes, publishedAt, updatedAt, syncDocument } = Astro.props;
+const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision, readingMinutes, publishedAt, updatedAt, syncDocument, backLink } = Astro.props;
 const readingLabel = formatReadingTime(readingMinutes ?? estimateReadingMinutes(contentHtml ?? ''));
 
 const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocument(contentHtml) : contentHtml) : contentHtml;
@@ -57,7 +58,7 @@ const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocum
     </div>
     {sourceDocUrl
       ? <a class="document-action" href={sourceDocUrl} target="_blank" rel="noopener">在飞书中打开 ↗</a>
-      : <a class="document-action" href={sitePath(current === 'work' ? '/work/' : '/posts/')}>返回{current === 'work' ? '工作' : '文章'}列表</a>}
+      : <a class="document-action" href={sitePath(backLink?.href ?? (current === 'work' ? '/work/' : '/posts/'))}>{backLink?.label ?? `返回${current === 'work' ? '工作' : '文章'}列表`}</a>}
   </div>
 
   {showWork && syncDocument && <DocumentSync document={syncDocument} revision={sourceRevision} />}

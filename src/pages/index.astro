@@ -4,33 +4,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import FeatureCard from '../components/FeatureCard.astro';
 import { showWork, sitePath } from '../lib/site';
 import home from '../data/home.json';
+const titleLines = ['蔡世逸', '的个人站'];
 ---
 <BaseLayout
   title="蔡世逸的个人站"
   description={home.tagline}
   current="home"
   bodyClass="home-page"
-  showStarfield={true}
 >
   <main class="page">
     <header class="hero home-hero">
-      <div class="identity-scene" aria-hidden="true">
-        <svg class="identity-orbits" viewBox="0 0 360 180" fill="none">
-          <ellipse class="orbit orbit-a" cx="180" cy="90" rx="152" ry="50" transform="rotate(-16 180 90)" pathLength="1" />
-          <ellipse class="orbit orbit-b" cx="180" cy="90" rx="125" ry="66" transform="rotate(20 180 90)" pathLength="1" />
-          <path class="orbit orbit-c" d="M62 91C102 17 263 16 304 88" pathLength="1" />
-          <circle class="orbit-point" cx="321" cy="54" r="3" />
-          <circle class="orbit-point second" cx="75" cy="114" r="2.5" />
-        </svg>
-      </div>
       <div class="hero-avatar-wrap">
-        <img class="hero-avatar" src={sitePath("/avatar.jpg")} alt="蔡世逸的 AI 头像" width="128" height="128" fetchpriority="high" decoding="async" />
+        <img class="hero-avatar" src={sitePath("/avatar.jpg")} alt="蔡世逸的 AI 头像" width="240" height="240" fetchpriority="high" decoding="async" />
       </div>
-      <h1>蔡世逸的个人站</h1>
+      <h1>
+        {titleLines.map(line => <span>{line}</span>)}
+      </h1>
       <p class="tagline">
         {home.tagline}
         <span class="hero-introduction">{home.introduction}</span>
       </p>
+    </header>
+    <div class="home-actions">
       <div class="hero-ctas">
         <a class="btn btn-primary" href={sitePath(showWork ? "/work/" : "/posts/")}>
           {showWork ? "浏览工作" : "阅读文章"}
@@ -51,7 +46,7 @@ import home from '../data/home.json';
         </a>}
       </div>
       <a class="explore-cue" href="#explore">继续探索 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v16m-6-6 6 6 6-6" /></svg></a>
-    </header>
+    </div>
 
     <section class="section home-explore" id="explore">
       <div class="section-head">
@@ -60,12 +55,10 @@ import home from '../data/home.json';
       </div>
 
       <div class:list={["card-grid", { "public-card-grid": !showWork }]}>
-        {home.cards.map((card, index) => <FeatureCard
+        {home.cards.map(card => <FeatureCard
           href={card.href} title={card.title} description={card.description}
-          variant={card.variant as 'indigo' | 'amber' | 'rose'}
           icon={card.icon as 'wrench' | 'book' | 'user'} meta={card.meta}
-          external={card.external} arrow={card.external ? '↗' : '→'}
-          revealDelay={((index % 4) + 1) as 1 | 2 | 3 | 4}
+          external={card.external} arrow={card.external ? '↗' : '→'} bandReveal
         />)}
       </div>
     </section>
@@ -91,17 +84,3 @@ import home from '../data/home.json';
     </section>
   </main>
 </BaseLayout>
-
-<script>
-  const initialized = new WeakSet();
-  let seen = false;
-  const enter = () => {
-    const scene = document.querySelector('.home-hero');
-    if (!scene || initialized.has(scene)) return;
-    initialized.add(scene);
-    if (!seen && document.documentElement.dataset.motion !== 'still') scene.classList.add('scene-enter');
-    seen = true;
-  };
-  document.addEventListener('astro:page-load', enter);
-  enter();
-</script>

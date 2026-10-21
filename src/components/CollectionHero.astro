@@ -1,8 +1,11 @@
 ---
-interface Props { title: string; description: string }
-const { title, description } = Astro.props;
+import BrandLogo from './BrandLogo.astro';
+interface Props { title: string; description: string; logo?: string; logoDark?: string }
+const { title, description, logo, logoDark } = Astro.props;
 ---
-<header class="hero collection-hero reveal">
-  <h1>{title}</h1>
-  <p class="tagline">{description}</p>
+<header class="hero collection-hero-surface">
+  <div class="collection-hero">
+    {logo ? <div class="collection-title"><BrandLogo src={logo} darkSrc={logoDark} /><h1>{title}</h1></div> : <h1>{title}</h1>}
+    <p class="tagline">{description}</p>
+  </div>
 </header>
