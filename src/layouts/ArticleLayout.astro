@@ -20,6 +20,7 @@ interface Props {
   title: string;
   description?: string;
   sourceDocUrl?: string;
+  mirrorUrl?: string;
   current?: 'work' | 'posts';
   bodyClass?: string;
   highlightCode?: boolean;
@@ -34,7 +35,7 @@ interface Props {
   contentHtml?: string;
   backLink?: { label: string; href: string };
 }
-const { title, description, sourceDocUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision, readingMinutes, publishedAt, updatedAt, syncDocument, backLink } = Astro.props;
+const { title, description, sourceDocUrl, mirrorUrl, breadcrumb, toc, contentHtml, current = 'posts', bodyClass = '', highlightCode = Boolean(sourceDocUrl), syncedAt, sourceRevision, readingMinutes, publishedAt, updatedAt, syncDocument, backLink } = Astro.props;
 const readingLabel = formatReadingTime(readingMinutes ?? estimateReadingMinutes(contentHtml ?? ''));
 
 const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocument(contentHtml) : contentHtml) : contentHtml;
@@ -56,9 +57,12 @@ const renderedHtml = contentHtml ? siteHtml(highlightCode ? await highlightDocum
       {updatedAt && <span>最后更新 <time datetime={updatedAt}>{formatArticleDate(updatedAt)}</time></span>}
       {syncedAt && <span title={`网页为同步副本，飞书版本 ${sourceRevision ?? ''}`}>同步于 <time datetime={syncedAt}>{formatArticleDate(syncedAt, true)}</time></span>}
     </div>
+    <div class="document-actions">
+    {showWork && mirrorUrl && <a class="document-action" href={mirrorUrl} target="_blank" rel="noopener">在飞书中阅读 ↗</a>}
     {sourceDocUrl
       ? <a class="document-action" href={sourceDocUrl} target="_blank" rel="noopener">在飞书中打开 ↗</a>
       : <a class="document-action" href={sitePath(backLink?.href ?? (current === 'work' ? '/work/' : '/posts/'))}>{backLink?.label ?? `返回${current === 'work' ? '工作' : '文章'}列表`}</a>}
+    </div>
   </div>
 
   {showWork && syncDocument && <DocumentSync document={syncDocument} revision={sourceRevision} />}

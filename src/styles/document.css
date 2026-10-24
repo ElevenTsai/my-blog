@@ -7,6 +7,7 @@
 .document-toolbar { max-width: 1200px; padding: 0 var(--gutter); margin: 0 auto; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--fs-line); }
 .document-meta { color: var(--fs-muted); font-size: 14px; font-variant-numeric: tabular-nums; }
 .document-action { color: var(--fs-link); font-size: 14px; white-space: nowrap; padding: 12px 0; }
+.document-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 20px; }
 .document-page .article-layout { grid-template-columns: 184px minmax(0, 784px); gap: 48px; max-width: 1200px; padding: 48px var(--gutter) 96px; }
 .document-page .article-content { grid-column: 2; grid-row: 1; max-width: 784px; font-size: 18px; line-height: 1.8; color: var(--fs-text); overflow-wrap: anywhere; }
 .document-page .article-sidebar { grid-column: 1; grid-row: 1; top: 92px; padding-right: 0; }
